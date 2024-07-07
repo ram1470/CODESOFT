@@ -1,0 +1,30 @@
+import numpy as np
+
+ratings = np.array([
+    [5, 3, 0, 0, 2],
+    [4, 0, 4, 1, 1],
+    [1, 1, 0, 5, 0],
+    [0, 0, 4, 0, 2],
+    [2, 0, 5, 3, 0]
+])
+
+def calculate_similarity(ratings):
+    sim = ratings.dot(ratings.T)
+    norms = np.array([np.sqrt(np.diagonal(sim))])
+    return sim / norms / norms.T
+
+def recommend_items(user_id, ratings, similarity):
+    n_users, n_items = ratings.shape
+    pred = np.zeros(n_items)
+    sim_scores = similarity[user_id]
+    for item_id in range(n_items):
+        if ratings[user_id, item_id] == 0:  
+            pred[item_id] = np.sum(ratings[:, item_id] * sim_scores) / np.sum(sim_scores)
+    recommendations = np.argsort(-pred)
+    return recommendations
+
+user_id = 4
+similarity = calculate_similarity(ratings)
+recommendations = recommend_items(user_id, ratings, similarity)
+
+print(f"Recommendations for user {user_id}: {recommendations}")
