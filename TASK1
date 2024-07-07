@@ -1,0 +1,21 @@
+import re
+def simple_chatbot():
+    print("Hello! I'm a simple chatbot. You can start chatting with me. Type 'exit' to end the conversation.") 
+    while True:
+        user_input = input("You: ")
+        user_input = user_input.lower()
+        if user_input == 'exit':
+            print("Chatbot: Goodbye!")
+            break
+        elif re.search(r'\b(hi|hello|hey)\b', user_input):
+            print("Chatbot: Hello there!")
+        elif re.search(r'\b(how are you)\b', user_input):
+            print("Chatbot: I'm just a bot, but I'm here to help!")
+        elif re.search(r'\b(thank you|thanks)\b', user_input):
+            print("Chatbot: You're welcome!")
+        elif re.search(r'\b(weather)\b', user_input):
+            print("Chatbot: I'm sorry, I can't provide weather information at the moment.")
+        else:
+            print("Chatbot: Sorry, I don't understand that.")
+if _name_ == "_main_":
+    simple_chatbot()
