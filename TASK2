@@ -1,0 +1,118 @@
+import math
+
+AI_PLAYER = 'O'
+HUMAN_PLAYER = 'X'
+EMPTY = ' '
+
+def print_board(board):
+    print(f"{board[0]} | {board[1]} | {board[2]}")
+    print("---------")
+    print(f"{board[3]} | {board[4]} | {board[5]}")
+    print("---------")
+    print(f"{board[6]} | {board[7]} | {board[8]}")
+
+def is_board_full(board):
+    return all(cell != EMPTY for cell in board)
+
+def check_winner(board, player):
+    winning_combinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  
+        [0, 4, 8], [2, 4, 6]              
+    ]
+    for combo in winning_combinations:
+        if all(board[i] == player for i in combo):
+            return True
+    return False
+
+def evaluate_board(board):
+    if check_winner(board, AI_PLAYER):
+        return 1  
+    elif check_winner(board, HUMAN_PLAYER):
+        return -1  
+    else:
+        return 0 
+
+def minimax(board, depth, alpha, beta, is_maximizing):
+    if check_winner(board, AI_PLAYER):
+        return 1
+    elif check_winner(board, HUMAN_PLAYER):
+        return -1
+    elif is_board_full(board):
+        return 0
+    
+    if is_maximizing:
+        max_eval = -math.inf
+        for i in range(9):
+            if board[i] == EMPTY:
+                board[i] = AI_PLAYER
+                eval = minimax(board, depth + 1, alpha, beta, False)
+                board[i] = EMPTY
+                max_eval = max(max_eval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+        return max_eval
+    else:
+        min_eval = math.inf
+        for i in range(9):
+            if board[i] == EMPTY:
+                board[i] = HUMAN_PLAYER
+                eval = minimax(board, depth + 1, alpha, beta, True)
+                board[i] = EMPTY
+                min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
+        return min_eval
+
+def find_best_move(board):
+    best_move = -1
+    best_eval = -math.inf
+    alpha = -math.inf
+    beta = math.inf
+    for i in range(9):
+        if board[i] == EMPTY:
+            board[i] = AI_PLAYER
+            eval = minimax(board, 0, alpha, beta, False)
+            board[i] = EMPTY
+            if eval > best_eval:
+                best_eval = eval
+                best_move = i
+    return best_move
+
+def play_game():
+    board = [EMPTY] * 9
+    current_player = HUMAN_PLAYER
+    
+    print("Welcome to Tic-Tac-Toe!")
+    print_board(board)
+    
+    while True:
+        if current_player == HUMAN_PLAYER:
+            human_move = int(input("Enter your move (0-8): "))
+            while board[human_move] != EMPTY:
+                print("Invalid move. Try again.")
+                human_move = int(input("Enter your move (0-8): "))
+            board[human_move] = HUMAN_PLAYER
+            current_player = AI_PLAYER
+        else:
+            ai_move = find_best_move(board)
+            board[ai_move] = AI_PLAYER
+            print(f"AI plays move: {ai_move}")
+            current_player = HUMAN_PLAYER
+        
+        print_board(board)
+        
+        if check_winner(board, HUMAN_PLAYER):
+            print("Congratulations! You win!")
+            break
+        elif check_winner(board, AI_PLAYER):
+            print("AI wins! Better luck next time.")
+            break
+        elif is_board_full(board):
+            print("It's a draw!")
+            break
+
+if _name_ == "_main_":
+    play_game()
